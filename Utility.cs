@@ -1,4 +1,5 @@
-﻿using UnityEngine.SceneManagement;
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace ModCore
 {
@@ -22,6 +23,28 @@ namespace ModCore
 		public static void LoadScene(string sceneName, bool additively = false)
 		{
 			SceneManager.LoadScene(sceneName, additively ? LoadSceneMode.Additive : LoadSceneMode.Single);
+		}
+
+		/// <summary>
+		/// Colorizes the given text with the given color
+		/// </summary>
+		/// <param name="text">The text to colorize</param>
+		/// <param name="color">The color to color the text with</param>
+		/// <returns>The formatted string with the color tag added</returns>
+		public static string ColorText(string text, Color color)
+		{
+			return $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{text}</color>";
+		}
+
+		/// <summary>
+		/// Colorizes the given text with the given color
+		/// </summary>
+		/// <param name="text">The text to colorize</param>
+		/// <param name="color">The HTML color to color the text with</param>
+		/// <returns>The formatted string with the color tag added</returns>
+		public static string ColorText(string text, string color)
+		{
+			return $"<color={color}>{text}</color>";
 		}
 	}
 }

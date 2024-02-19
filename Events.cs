@@ -60,6 +60,7 @@ public static class Events
 
 	public static void SceneLoad(Scene scene, LoadSceneMode mode)
 	{
+		PlayerSpawner.RegisterSpawnListener(PlayerSpawn);
 		OnSceneLoaded?.Invoke(scene, mode);
 	}
 

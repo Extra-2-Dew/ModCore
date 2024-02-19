@@ -32,7 +32,6 @@ namespace ModCore
 		private void AddEventListeners()
 		{
 			SceneManager.sceneLoaded += Events.SceneLoad;
-			PlayerSpawner.RegisterSpawnListener(Events.PlayerSpawn);
 		}
 	}
 }

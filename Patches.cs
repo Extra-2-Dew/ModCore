@@ -35,7 +35,7 @@ namespace ModCore
 		// Invokes an event hook
 		public static void EntityEventsOwner_SendRoomChangeDone_Patch(Entity ent, LevelRoom to, LevelRoom from, EntityEventsOwner.RoomEventData data)
 		{
-			Events.RoomChange(ent, to, from, data);
+			Events.RoomChange(ent, from, to, data);
 		}
 
 		[HarmonyPostfix]

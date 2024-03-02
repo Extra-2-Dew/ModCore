@@ -12,6 +12,8 @@ namespace ModCore
 		private List<CommandInfo> commands;
 
 		public static DebugMenuCommands Instance { get { return instance; } }
+		public DebugMenu Menu { get { return menu; } }
+		public SaverOwner Saver { get { return menu._saver; } }
 
 		/// <summary>
 		/// Initializes core debug menu commands

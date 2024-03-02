@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Text.RegularExpressions;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace ModCore
@@ -45,6 +46,30 @@ namespace ModCore
 		public static string ColorText(string text, string color)
 		{
 			return $"<color={color}>{text}</color>";
+		}
+
+		/// <summary>
+		/// Tries to parsea string to Vector3
+		/// </summary>
+		/// <param name="vectorAsString">The string to parse</param>
+		/// <param name="result">The parsed Vector3</param>
+		/// <returns>True if parse was successfull, false otherwise</returns>
+		public static bool TryParseVector3(string vectorAsString, out Vector3 result)
+		{
+			result = Vector3.zero;
+			vectorAsString = Regex.Replace(vectorAsString, @"[()]", "");
+			string[] components = vectorAsString.Trim().Split(',');
+
+			if (components.Length == 3)
+			{
+				if (!float.TryParse(components[0], out float x) || !float.TryParse(components[1], out float y) || !float.TryParse(components[2], out float z))
+					return false;
+
+				result = new Vector3(x, y, z);
+				return true;
+			}
+
+			return false;
 		}
 	}
 }

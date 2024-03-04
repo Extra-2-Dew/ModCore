@@ -35,7 +35,5 @@
 			<HintPath>$(GameAssemblyPath)</HintPath>
 		</Reference>
 	</ItemGroup>
-    <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="Exists('$(ModInstallPath)')">
-	    <Exec Command="xcopy /y &quot;$(TargetPath)&quot; &quot;$(ModInstallPath)&quot;" />
-    </Target>
+
 </Project>

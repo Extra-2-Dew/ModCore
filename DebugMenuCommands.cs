@@ -14,6 +14,7 @@ namespace ModCore
 		public static DebugMenuCommands Instance { get { return instance; } }
 		public DebugMenu Menu { get { return menu; } }
 		public SaverOwner Saver { get { return menu._saver; } }
+		public bool HasInitialized { get; private set; }
 
 		/// <summary>
 		/// Initializes core debug menu commands
@@ -21,24 +22,15 @@ namespace ModCore
 		/// <param name="menu">The DebugMenu reference</param>
 		public void Initialize(DebugMenu menu)
 		{
-			if (instance == null)
-				instance = this;
-
+			instance = this;
 			this.menu = menu;
 			commands = new List<CommandInfo>
 			{
 				new("help", HelpCommand)
 			};
 
-			Events.OnSceneLoaded += OnSceneLoad;
-
 			OnDebugMenuInitialized?.Invoke();
-		}
-
-		private void OnSceneLoad(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
-		{
-			// Nullify instance so this gets reinitialized to maintain DebugMenu reference through loads
-			instance = null;
+			HasInitialized = true;
 		}
 
 		/// <summary>

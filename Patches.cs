@@ -55,7 +55,7 @@ namespace ModCore
 			{
 				__instance.menuImpl.SwitchToScreen("debugRoot", null);
 
-				if (DebugMenuCommands.Instance == null)
+				if (DebugMenuCommands.Instance == null || !DebugMenuCommands.Instance.HasInitialized)
 					new DebugMenuCommands().Initialize(__instance._debugMenu);
 			}
 		}

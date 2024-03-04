@@ -10,7 +10,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="ModCore.csproj.user" />
+    <None Include="Assets/**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -29,11 +31,15 @@
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
   </ItemGroup>
-	<ItemGroup>
-		<Reference Include="Assembly-CSharp">
-			<Private>false</Private>
-			<HintPath>$(GameAssemblyPath)</HintPath>
-		</Reference>
-	</ItemGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <Private>false</Private>
+      <HintPath>$(GameAssemblyPath)/Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <Private>false</Private>
+      <HintPath>$(GameAssemblyPath)/UnityEngine.UI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 
 </Project>

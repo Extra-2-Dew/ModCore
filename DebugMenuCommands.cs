@@ -1,6 +1,9 @@
-﻿using System;
+﻿using BepInEx;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace ModCore
 {
@@ -9,18 +12,20 @@ namespace ModCore
 		public static Action OnDebugMenuInitialized;
 		private static DebugMenuCommands instance;
 		private DebugMenu menu;
-		private List<CommandInfo> commands;
+
+		public List<CommandInfo> commands;
 
 		public static DebugMenuCommands Instance { get { return instance; } }
 		public DebugMenu Menu { get { return menu; } }
 		public SaverOwner Saver { get { return menu._saver; } }
 		public bool HasInitialized { get; private set; }
+		public DebugMenuManager debugMenuManager;
 
-		/// <summary>
-		/// Initializes core debug menu commands
-		/// </summary>
-		/// <param name="menu">The DebugMenu reference</param>
-		public void Initialize(DebugMenu menu)
+        /// <summary>
+        /// Initializes core debug menu commands
+        /// </summary>
+        /// <param name="menu">The DebugMenu reference</param>
+        public void Initialize(DebugMenu menu)
 		{
 			instance = this;
 			this.menu = menu;
@@ -31,7 +36,11 @@ namespace ModCore
 
 			OnDebugMenuInitialized?.Invoke();
 			HasInitialized = true;
-		}
+
+			GameObject go = new GameObject();
+			go.name = "Debug Menu Manager";
+            debugMenuManager = go.AddComponent<DebugMenuManager>();
+        }
 
 		/// <summary>
 		/// Parses the user input to get command & args from it
@@ -70,7 +79,8 @@ namespace ModCore
 		/// <param name="text">The text to update it to</param>
 		public void UpdateOutput(string text)
 		{
-			menu.UpdateInfo(text);
+			debugMenuManager.CommandOutput(text);
+			//menu.UpdateInfo(text);
 		}
 
 

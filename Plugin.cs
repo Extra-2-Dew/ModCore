@@ -2,6 +2,7 @@
 using BepInEx.Logging;
 using HarmonyLib;
 using System.Reflection;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace ModCore
@@ -11,6 +12,7 @@ namespace ModCore
 	public class Plugin : BaseUnityPlugin
 	{
 		internal static ManualLogSource Log { get; private set; }
+
 
 		private void Awake()
 		{
@@ -22,6 +24,14 @@ namespace ModCore
 
 			// Adds event listeners
 			AddEventListeners();
+		}
+
+		private void Update()
+		{
+			if (Input.GetKeyDown(KeyCode.Equals))
+			{
+				DebugMenuCommands.Instance.debugMenuManager.SetConsoleVisibility(true);
+			}
 		}
 
 		private void OnApplicationQuit()

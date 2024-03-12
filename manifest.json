@@ -1,0 +1,16 @@
+{
+	"name": "ModCore",
+	"description": "Essential dependency for many mods",
+	"authors": [
+		"Chris is Awesome",
+		"GameWyrm"
+	],
+	"version": "1.0.0",
+	"requires": [
+
+	],
+	"conflicts": [
+
+	],
+	"github-url": "https://github.com/Extra-2-Dew/ModCore"
+}

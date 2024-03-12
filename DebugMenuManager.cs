@@ -18,6 +18,8 @@ namespace ModCore
         private Text commandOutput;
         private GameObject commandListBG;
         private Text commandList;
+        private Button closeButton;
+        private Animator anim;
 
         private void Awake()
         {
@@ -26,16 +28,21 @@ namespace ModCore
 
             debugMenu = GameObject.Instantiate(debugMenuBundle.LoadAsset<GameObject>("DebugCanvas"));
             commandInput = debugMenu.GetComponentInChildren<InputField>();
-            commandOutput = debugMenu.transform.Find("HistoryBG/Scroll View/Viewport/Content").GetComponent<Text>();
-            commandListBG = debugMenu.transform.Find("CommandInput/CommandHelper").gameObject;
-            commandList = debugMenu.transform.Find("CommandInput/CommandHelper/Commands").GetComponent<Text>();
-            debugMenu.SetActive(false);
+            commandOutput = debugMenu.transform.Find("DebugMenu/HistoryBG/Scroll View/Viewport/Content").GetComponent<Text>();
+            commandListBG = debugMenu.transform.Find("DebugMenu/CommandInput/CommandHelper").gameObject;
+            commandList = debugMenu.transform.Find("DebugMenu/CommandInput/CommandHelper/Commands").GetComponent<Text>();
+            closeButton = debugMenu.transform.Find("DebugMenu/CloseButton").GetComponent<Button>();
+            anim = debugMenu.transform.GetChild(0).GetComponent<Animator>();
+
+            closeButton.onClick.AddListener(() => { SetConsoleVisibility(false); });
+
+            commandInput.interactable = false;
+            closeButton.interactable = false;
 
             commandInput.onEndEdit.AddListener(SubmitCommand);
             commandInput.onValueChanged.AddListener(SuggestCommand);
 
             DontDestroyOnLoad(debugMenu);
-            debugMenu.SetActive(false);
             commandOutput.text = "";
             commandListBG.SetActive(false);
         }
@@ -46,11 +53,19 @@ namespace ModCore
         /// <param name="visible"></param>
         public void SetConsoleVisibility(bool visible)
         {
-            debugMenu.SetActive(visible);
             if (visible)
             {
+                anim.SetInteger("State", 1);
+                commandInput.interactable = true;
+                closeButton.interactable = true;
                 commandInput.text = "";
                 commandInput.Select();
+            }
+            else
+            {
+                anim.SetInteger("State", 0);
+                commandInput.interactable = false;
+                closeButton.interactable = false;
             }
         }
 

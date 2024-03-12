@@ -39,6 +39,7 @@ namespace ModCore
 
 			GameObject go = new GameObject();
 			go.name = "Debug Menu Manager";
+            GameObject.DontDestroyOnLoad(go);
             debugMenuManager = go.AddComponent<DebugMenuManager>();
         }
 

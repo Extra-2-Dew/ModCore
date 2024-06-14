@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using UnityEngine;
 
 namespace ModCore
 {
@@ -44,28 +43,6 @@ namespace ModCore
 		public static void EntityEventsOwner_SendItemGet_Patch(Entity ent, Item item)
 		{
 			Events.ItemGet(ent, item);
-		}
-
-		[HarmonyPostfix]
-		[HarmonyPatch(typeof(PauseMenu), "Update")]
-		// Allows pressing a key to open debug menu
-		public static void PausewMenu_Update_Patch(ref PauseMenu __instance)
-		{
-			if (Input.GetKeyDown(KeyCode.BackQuote))
-			{
-				__instance.menuImpl.SwitchToScreen("debugRoot", null);
-
-				if (DebugMenuCommands.Instance == null || !DebugMenuCommands.Instance.HasInitialized)
-					new DebugMenuCommands().Initialize(__instance._debugMenu);
-			}
-		}
-
-		[HarmonyPostfix]
-		[HarmonyPatch(typeof(DebugMenu), "ParseResultString")]
-		// Extends DebugMenu.ParseResultString() to check for custom commands
-		public static void DebugMenu_ParseResultString_Patch(string str)
-		{
-			DebugMenuCommands.Instance.ParseInput(str);
 		}
 	}
 }

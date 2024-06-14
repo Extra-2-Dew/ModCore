@@ -28,9 +28,10 @@ namespace ModCore
 
 		private void Update()
 		{
-			if (Input.GetKeyDown(KeyCode.Equals))
+			if (Input.GetKeyDown(DebugMenuManager.DebugMenuKey))
 			{
-				DebugMenuCommands.Instance.debugMenuManager.SetConsoleVisibility(true);
+				if (!ObjectUpdater.Instance.IsPaused() || (DebugMenuManager.Instance.IsVisible))
+					DebugMenuManager.Instance.ToggleMenuVisibility();
 			}
 		}
 

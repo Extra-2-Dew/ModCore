@@ -44,5 +44,13 @@ namespace ModCore
 		{
 			Events.ItemGet(ent, item);
 		}
+
+		[HarmonyPostfix]
+		[HarmonyPatch(typeof(SaverOwner), "LoadLocalFromFile")]
+		// Invokes an event
+		public static void SaverOwner_LoadLocalFromFile_Patch(SaverOwner __instance)
+		{
+			Plugin.MainSaver = __instance;
+		}
 	}
 }

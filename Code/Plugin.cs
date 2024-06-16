@@ -11,8 +11,8 @@ namespace ModCore
 	[BepInProcess("ID2.exe")]
 	public class Plugin : BaseUnityPlugin
 	{
+		public static SaverOwner MainSaver { get; internal set; }
 		internal static ManualLogSource Log { get; private set; }
-
 
 		private void Awake()
 		{

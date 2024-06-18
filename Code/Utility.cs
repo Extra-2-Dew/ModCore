@@ -1,4 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using BepInEx;
+using SmallJson;
+using System;
+using System.IO;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -49,11 +53,11 @@ namespace ModCore
 		}
 
 		/// <summary>
-		/// Tries to parsea string to Vector3
+		/// Tries to parse a string to Vector3
 		/// </summary>
 		/// <param name="vectorAsString">The string to parse</param>
 		/// <param name="result">The parsed Vector3</param>
-		/// <returns>True if parse was successfull, false otherwise</returns>
+		/// <returns>True if parse was successful, false otherwise</returns>
 		public static bool TryParseVector3(string vectorAsString, out Vector3 result)
 		{
 			result = Vector3.zero;
@@ -70,6 +74,39 @@ namespace ModCore
 			}
 
 			return false;
+		}
+
+		/// <summary>
+		/// Tries to parse JSON into the given JsonBase type
+		/// </summary>
+		/// <typeparam name="T">The JsonBase type to parse the data into</typeparam>
+		/// <param name="pluginName">The name of the Plugin that has the JSON file to be parsed</param>
+		/// <param name="jsonFolder">The name of the parent folder containing the JSON file to be parsed</param>
+		/// <param name="fileName">The filename for the JSON file to be parsed</param>
+		/// <param name="rootObj">The parsed JsonBase object</param>
+		/// <returns>True if parse was successful, false otherwise</returns>
+		public static bool TryParseJson<T>(string pluginName, string jsonFolder, string fileName, out T rootObj) where T : JsonBase
+		{
+			string jsonPath = BepInEx.Utility.CombinePaths(Paths.PluginPath, pluginName, jsonFolder, fileName);
+			rootObj = null;
+
+			try
+			{
+				// If file doesn't exist, do nothing
+				if (!File.Exists(jsonPath))
+				{
+					Plugin.Log.LogWarning($"JSON file at path '{jsonPath} wasn't found!");
+					return false;
+				}
+
+				rootObj = JsonBase.Decode<JsonObject>(File.ReadAllText(jsonPath)) as T;
+				return rootObj != null;
+			}
+			catch (Exception ex)
+			{
+				Plugin.Log.LogError($"Error when parsing JSON at path '{jsonPath}'\n{ex.Message}");
+				return false;
+			}
 		}
 	}
 }

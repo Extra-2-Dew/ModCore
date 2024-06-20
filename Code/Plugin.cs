@@ -24,6 +24,9 @@ namespace ModCore
 
 			// Adds event listeners
 			AddEventListeners();
+
+			// Mute splash sound effect and the start of MainMenu song
+			MuteAudio();
 		}
 
 		private void Update()
@@ -43,6 +46,12 @@ namespace ModCore
 		private void AddEventListeners()
 		{
 			SceneManager.sceneLoaded += Events.SceneLoad;
+		}
+
+		private void MuteAudio()
+		{
+			SoundPlayer.Instance.SoundVolume = 0;
+			MusicPlayer.Instance.MusicVolume = 0;
 		}
 	}
 }

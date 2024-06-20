@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using UnityEngine;
 
 namespace ModCore
 {
@@ -51,6 +52,18 @@ namespace ModCore
 		public static void SaverOwner_LoadLocalFromFile_Patch(SaverOwner __instance)
 		{
 			Plugin.MainSaver = __instance;
+		}
+
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(MainMenu.MainScreen), "DoShow")]
+		// Prevent hitting back button on MainMenu from quitting game, and auto-skip the menu animation
+		public static void MainMenu_MainScreen_DoShow_Patch(MainMenu.MainScreen __instance)
+		{
+			// Prevent back from quitting
+			Object.Destroy(Utility.FindNestedChild("Main", "Quit").GetComponent<GuiCancelObjectTag>());
+
+			// Skip first time animation
+			__instance.Root.firstTime = false;
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace ModCore
@@ -103,18 +104,28 @@ namespace ModCore
 			commandInput.interactable = !IsVisible;
 			closeButton.interactable = !IsVisible;
 			commandInput.text = "";
+			MainMenu mainMenu = SceneManager.GetActiveScene().name == "MainMenu" ? GameObject.Find("GuiFuncs").GetComponent<MainMenu>() : null;
+			GuiInteractionLayer mainMenuGuiLayer = mainMenu?.menuImpl.currScreen.Root._interactionLayer;
 
 			// Unpause
 			if (IsVisible)
 			{
 				pauseTag.Release();
 				pauseTag = null;
+
+				// Allow interaction with MainMenu UI
+				if (mainMenuGuiLayer != null)
+					mainMenuGuiLayer.IsActive = true;
 			}
 			// Pause
 			else
 			{
 				pauseTag = ObjectUpdater.Instance.RequestPause();
 				commandInput.ActivateInputField();
+
+				// Disallow interaction with MainMenu UI
+				if (mainMenuGuiLayer != null)
+					mainMenuGuiLayer.IsActive = false;
 			}
 
 			IsVisible = !IsVisible;

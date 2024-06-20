@@ -162,6 +162,8 @@ namespace ModCore
 				command.Callback.Invoke(args);
 				Plugin.Log.LogInfo($"Ran command {commandName} with {args.Length} args!");
 			}
+
+			commandInput.ActivateInputField();
 		}
 
 		private void SuggestCommand(string text)

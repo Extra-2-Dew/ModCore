@@ -108,5 +108,49 @@ namespace ModCore
 				return false;
 			}
 		}
+
+		/// <summary>
+		/// Searches for the child by name nested under the given parent
+		/// </summary>
+		/// <param name="parent">The parent Transform that contains the child</param>
+		/// <param name="childName">The name of the child to look for</param>
+		/// <returns>The found Transform of the child, null if not found</returns>
+		public static Transform FindNestedChild(Transform parent, string childName)
+		{
+			foreach (Transform child in parent)
+			{
+				if (child.name == childName)
+					return child;
+
+				Transform result = FindNestedChild(child, childName);
+
+				if (result != null)
+					return result;
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Searches for the child by name nested under the given parent
+		/// </summary>
+		/// <param name="parentName">The name of the parent that contains the child</param>
+		/// <param name="childName">The name of the child to look for</param>
+		/// <returns>The found Transform of the child, null if not found</returns>
+		public static Transform FindNestedChild(string parentName, string childName)
+		{
+			foreach (Transform child in GameObject.Find(parentName).transform)
+			{
+				if (child.name == childName)
+					return child;
+
+				Transform result = FindNestedChild(child, childName);
+
+				if (result != null)
+					return result;
+			}
+
+			return null;
+		}
 	}
 }

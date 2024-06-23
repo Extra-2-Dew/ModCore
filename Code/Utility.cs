@@ -152,5 +152,31 @@ namespace ModCore
 
 			return null;
 		}
+
+		public static Texture2D GetTextureFromFile(string path)
+		{
+            try
+            {
+                byte[] data = null;
+                if (File.Exists(path))
+                {
+                    data = File.ReadAllBytes(path);
+                }
+                else
+                {
+                    Plugin.Log.LogError($"Unable to find the texture requested at {path}.");
+                    return null;
+                }
+                Texture2D tex = new(512, 512, TextureFormat.RGBA32, false);
+                tex.LoadImage(data);
+
+                return tex;
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogError("Unable to load provided texture: " + e.Message);
+                return null;
+            }
+        }
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using BepInEx;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -40,6 +41,7 @@ namespace ModCore
 		private Animator animator;
 		private ObjectUpdater.PauseTag pauseTag;
 		private RectTransform commandListBGRect;
+		private Scrollbar scrollbar;
 		private bool hasInited;
 
 		public static DebugMenuManager Instance
@@ -93,6 +95,7 @@ namespace ModCore
 			if (textColors.TryGetValue(textColor, out string color))
 			{
 				commandOutput.text = Utility.ColorText(commandOutput.text + text, color) + "\n";
+				instance.StartCoroutine(ScrollMenuToBottom());
 			}
 		}
 
@@ -124,6 +127,7 @@ namespace ModCore
 			commandList = menuObj.transform.Find("DebugMenu/CommandInput/CommandHelper/Commands").GetComponent<Text>();
 			closeButton = menuObj.transform.Find("DebugMenu/CloseButton").GetComponent<Button>();
 			animator = menuObj.transform.GetChild(0).GetComponent<Animator>();
+			scrollbar = menuObj.transform.Find("DebugMenu/HistoryBG/Scroll View/Scrollbar Vertical").GetComponent<Scrollbar>();
 
 			// Add listeners
 			closeButton.onClick.AddListener(() => { ToggleMenuVisibility(); });
@@ -257,7 +261,15 @@ namespace ModCore
 			commandListBG.SetActive(!string.IsNullOrEmpty(commandList.text));
 		}
 
-		public class CommandHandler
+        private static IEnumerator ScrollMenuToBottom()
+        {
+			// wait a few frames to let all the text properly initialize
+            yield return new WaitForEndOfFrame();
+            yield return new WaitForEndOfFrame();
+            instance.scrollbar.value = 0;
+        }
+
+        public class CommandHandler
 		{
 			private List<CommandInfo> commands;
 

@@ -16,10 +16,12 @@ public static class Events
 	public static event PauseFunc OnPauseChange;
 	public static event SceneFunc OnSceneLoaded;
 	public static event Func OnGameQuit;
+	public static event FileFunc OnFileStart;
 
 	// Player
 	public delegate void Func();
 	public delegate void PlayerSpawnFunc(Entity player, GameObject camera, PlayerController controller);
+	public delegate void FileFunc(bool newFile);
 	public delegate void PauseFunc(bool paused);
 	public delegate void EntityFunc(Entity entity);
 	public delegate void EntityDeathFunc(Entity entity, Killable.DetailedDeathData data);
@@ -67,5 +69,10 @@ public static class Events
 	public static void GameQuit()
 	{
 		OnGameQuit?.Invoke();
+	}
+
+	internal static void FileStart(bool newFile)
+	{
+		OnFileStart?.Invoke(newFile);
 	}
 }

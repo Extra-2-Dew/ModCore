@@ -48,7 +48,7 @@ namespace ModCore
 
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(SaverOwner), "LoadLocalFromFile")]
-		// Invokes an event
+		// Stores reference to MainSaver
 		public static void SaverOwner_LoadLocalFromFile_Patch(SaverOwner __instance)
 		{
 			Plugin.MainSaver = __instance;
@@ -64,6 +64,14 @@ namespace ModCore
 
 			// Skip first time animation
 			__instance.Root.firstTime = false;
+		}
+
+		[HarmonyPrefix]
+		[HarmonyPatch(typeof(MainMenu), "StartGame")]
+		// Invokes an event
+		public static void MainMenu_StartGame_Patch(MainMenu __instance)
+		{
+			Events.FileStart(__instance._saver.GetSaver("/local/start", true) == null);
 		}
 	}
 }

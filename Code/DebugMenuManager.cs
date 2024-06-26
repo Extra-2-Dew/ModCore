@@ -92,7 +92,7 @@ namespace ModCore
 		{
 			if (textColors.TryGetValue(textColor, out string color))
 			{
-				commandOutput.text = Utility.ColorText(text, color) + "\n";
+				commandOutput.text = Utility.ColorText(commandOutput.text + text, color) + "\n";
 			}
 		}
 

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -10,14 +11,29 @@ namespace ModCore
 {
 	public class DebugMenuManager : MonoBehaviour
 	{
+		public enum TextColor
+		{
+			Default,
+			Success,
+			Warn,
+			Error
+		}
+
 		public static KeyCode DebugMenuKey { get; } = KeyCode.BackQuote;
 		public Action OnDebugMenuInitialized;
 		public bool IsVisible { get; private set; }
 
 		private static DebugMenuManager instance;
+		private static Dictionary<TextColor, string> textColors = new()
+		{
+			{ TextColor.Default, "#000000" },
+			{ TextColor.Success, "#539a39" },
+			{ TextColor.Warn, "#cfa136" },
+			{ TextColor.Error, "#d94343" }
+		};
+		private static Text commandOutput;
 		private CommandHandler commandHandler;
 		private InputField commandInput;
-		private Text commandOutput;
 		private GameObject commandListBG;
 		private Text commandList;
 		private Button closeButton;
@@ -37,6 +53,48 @@ namespace ModCore
 			}
 		}
 		public CommandHandler CommHandler { get { return commandHandler; } }
+
+		/// <summary>
+		/// Adds all DebugMenu commands for this entire mod
+		/// </summary>
+		public static void AddCommands()
+		{
+			Assembly callingAssembly = Assembly.GetCallingAssembly();
+			Type[] types = callingAssembly.GetTypes();
+
+			foreach (Type type in types)
+			{
+				MethodInfo[] methods = type.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+				object instance = null;
+
+				foreach (MethodInfo method in methods)
+				{
+					object[] attributes = method.GetCustomAttributes(typeof(DebugMenuCommand), true);
+
+					if (attributes != null && attributes.Length > 0)
+					{
+						if (instance == null)
+							instance = Activator.CreateInstance(type);
+
+						DebugMenuCommand command = (DebugMenuCommand)attributes[0];
+						CommandHandler.CommandFunc commandDelegate = args => method.Invoke(instance, [args]);
+						Instance.CommHandler.AddCommand(command.CommandName, commandDelegate, command.CommandAliases);
+					}
+				}
+			}
+		}
+
+		/// <summary>
+		/// Updates the output of the debug menu
+		/// </summary>
+		/// <param name="text">The text to update it to</param>
+		public static void LogToConsole(string text, TextColor textColor = TextColor.Default)
+		{
+			if (textColors.TryGetValue(textColor, out string color))
+			{
+				commandOutput.text = Utility.ColorText(text, color) + "\n";
+			}
+		}
 
 		// Creates a static GameObject and adds self to it as a component
 		private static DebugMenuManager Init()
@@ -132,15 +190,6 @@ namespace ModCore
 		}
 
 		/// <summary>
-		/// Updates the output of the debug menu
-		/// </summary>
-		/// <param name="text">The text to update it to</param>
-		public void UpdateOutput(string text)
-		{
-			commandOutput.text = text + "\n" + commandOutput.text;
-		}
-
-		/// <summary>
 		/// Parses the user input to get command & args from it
 		/// </summary>
 		/// <param name="input">The user input</param>
@@ -229,9 +278,8 @@ namespace ModCore
 			{
 				CommandInfo newCommand = new(commandName, commandFunc, aliases);
 				commands.Add(newCommand);
-				Plugin.Log.LogInfo("Added command " + commandName + "!");
+				Plugin.Log.LogInfo($"Added command {commandName}!");
 			}
-
 
 			// Methods for default commands go below here
 
@@ -242,7 +290,7 @@ namespace ModCore
 				foreach (CommandInfo command in commands)
 					output += command.Name + "\n";
 
-				Instance.UpdateOutput(output);
+				LogToConsole(output);
 			}
 
 			public class CommandInfo

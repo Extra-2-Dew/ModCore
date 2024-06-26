@@ -78,7 +78,7 @@ namespace ModCore
 
 						DebugMenuCommand command = (DebugMenuCommand)attributes[0];
 						CommandHandler.CommandFunc commandDelegate = args => method.Invoke(instance, [args]);
-						Instance.CommHandler.AddCommand(command.CommandName, commandDelegate, command.CommandAliases);
+						Instance.CommHandler.AddCommand(command.CommandName, commandDelegate, command.CommandAliases, command.CaseSensitive);
 					}
 				}
 			}
@@ -200,13 +200,17 @@ namespace ModCore
 
 			commandInput.text = "";
 			commandListBG.SetActive(false);
-			string[] splitInput = input.ToLower().Split(' ');
-			string commandName = splitInput[0];
+			string[] splitInput = input.Split(' ');
+			string commandName = splitInput[0].ToLower();
 			CommandHandler.CommandInfo command = commandHandler.Commands.Find(x => x.Name == commandName || (x.Aliases != null && x.Aliases.Contains(commandName)));
 
 			// If command is valid
 			if (command != null)
 			{
+				// If not case sensitive, lowercase all args
+				if (!command.CaseSensitive)
+					splitInput = splitInput.Select(x => x.ToLower()).ToArray();
+
 				string[] args = splitInput.Skip(1).ToArray();
 				command.Callback.Invoke(args);
 				Plugin.Log.LogInfo($"Ran command {commandName} with {args.Length} args!");
@@ -274,9 +278,9 @@ namespace ModCore
 			/// </summary>
 			/// <param name="commandName">The name of the command</param>
 			/// <param name="commandFunc">The CommandFunc function to invoke when command is executed</param>
-			public void AddCommand(string commandName, CommandFunc commandFunc, string[] aliases = null)
+			public void AddCommand(string commandName, CommandFunc commandFunc, string[] aliases = null, bool caseSensitive = false)
 			{
-				CommandInfo newCommand = new(commandName, commandFunc, aliases);
+				CommandInfo newCommand = new(commandName, commandFunc, aliases, caseSensitive);
 				commands.Add(newCommand);
 				Plugin.Log.LogInfo($"Added command {commandName}!");
 			}
@@ -298,12 +302,14 @@ namespace ModCore
 				public string Name { get; }
 				public string[] Aliases { get; }
 				public CommandFunc Callback { get; }
+				public bool CaseSensitive { get; }
 
-				public CommandInfo(string name, CommandFunc callback, string[] aliases = null)
+				public CommandInfo(string name, CommandFunc callback, string[] aliases = null, bool caseSensitive = false)
 				{
 					Name = name;
 					Aliases = aliases;
 					Callback = callback;
+					CaseSensitive = caseSensitive;
 				}
 			}
 		}

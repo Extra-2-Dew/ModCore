@@ -59,29 +59,19 @@ namespace ModCore
 		/// <summary>
 		/// Adds all DebugMenu commands for this entire mod
 		/// </summary>
-		public static void AddCommands()
+		public static void AddCommands(object instance)
 		{
-			Assembly callingAssembly = Assembly.GetCallingAssembly();
-			Type[] types = callingAssembly.GetTypes();
+			MethodInfo[] methods = instance.GetType().GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
 
-			foreach (Type type in types)
+			foreach (MethodInfo method in methods)
 			{
-				MethodInfo[] methods = type.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-				object instance = null;
+				object[] attributes = method.GetCustomAttributes(typeof(DebugMenuCommand), true);
 
-				foreach (MethodInfo method in methods)
+				if (attributes != null && attributes.Length > 0)
 				{
-					object[] attributes = method.GetCustomAttributes(typeof(DebugMenuCommand), true);
-
-					if (attributes != null && attributes.Length > 0)
-					{
-						if (instance == null)
-							instance = Activator.CreateInstance(type);
-
-						DebugMenuCommand command = (DebugMenuCommand)attributes[0];
-						CommandHandler.CommandFunc commandDelegate = args => method.Invoke(instance, [args]);
-						Instance.CommHandler.AddCommand(command.CommandName, commandDelegate, command.CommandAliases, command.CaseSensitive);
-					}
+					DebugMenuCommand command = (DebugMenuCommand)attributes[0];
+					CommandHandler.CommandFunc commandDelegate = args => method.Invoke(instance, [args]);
+					Instance.CommHandler.AddCommand(command.CommandName, commandDelegate, command.CommandAliases, command.CaseSensitive);
 				}
 			}
 		}
@@ -261,15 +251,15 @@ namespace ModCore
 			commandListBG.SetActive(!string.IsNullOrEmpty(commandList.text));
 		}
 
-        private static IEnumerator ScrollMenuToBottom()
-        {
+		private static IEnumerator ScrollMenuToBottom()
+		{
 			// wait a few frames to let all the text properly initialize
-            yield return new WaitForEndOfFrame();
-            yield return new WaitForEndOfFrame();
-            instance.scrollbar.value = 0;
-        }
+			yield return new WaitForEndOfFrame();
+			yield return new WaitForEndOfFrame();
+			instance.scrollbar.value = 0;
+		}
 
-        public class CommandHandler
+		public class CommandHandler
 		{
 			private List<CommandInfo> commands;
 

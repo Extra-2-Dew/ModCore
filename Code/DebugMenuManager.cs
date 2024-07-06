@@ -24,6 +24,7 @@ namespace ModCore
 		public Action OnDebugMenuInitialized;
 		public bool IsVisible { get; private set; }
 
+		
 		private static DebugMenuManager instance;
 		private static Dictionary<TextColor, string> textColors = new()
 		{
@@ -33,10 +34,16 @@ namespace ModCore
 			{ TextColor.Error, "#d94343" }
 		};
 		private static Text commandOutput;
+		private static Text pageText;
+		private static List<string> pages;
+		private static int currentPage = 1;
+		private static int maxPages = 1;
 		private CommandHandler commandHandler;
 		private InputField commandInput;
 		private GameObject commandListBG;
 		private Text commandList;
+		private Button lastPageButton;
+		private Button nextPageButton;
 		private Button closeButton;
 		private Animator animator;
 		private ObjectUpdater.PauseTag pauseTag;
@@ -82,11 +89,53 @@ namespace ModCore
 		/// <param name="text">The text to update it to</param>
 		public static void LogToConsole(string text, TextColor textColor = TextColor.Default)
 		{
+			if (pages.Count == 0)
+			{
+				pages.Add(""); // Page 0, contains the entire history
+				pages.Add(""); // Page 1 to prevent things breaking
+			}
 			if (textColors.TryGetValue(textColor, out string color))
 			{
-				commandOutput.text = Utility.ColorText(commandOutput.text + text, color) + "\n";
-				instance.StartCoroutine(ScrollMenuToBottom());
+				pages[0] = pages[0] + Utility.ColorText(text, color) + "\n";
+				List<string> tempList = [pages[0]];
+				int charactersRemaining = pages[0].Length;
+				// 16000 is the maximum safe characters per page
+				string workingPageText = pages[0];
+				while (workingPageText.Length > 16000)
+				{
+					int firstIndex = workingPageText.IndexOf('\n', workingPageText.Length - 16000);
+					if (firstIndex != -1)
+					{
+						string newPage = workingPageText.Substring(firstIndex);
+						tempList.Add(newPage);
+						workingPageText = workingPageText.Substring(0, firstIndex - 1);
+					}
+					else
+					{
+						Plugin.Log.LogError("What? Somehow you have over 16000 characters without a line break. Rip your console I guess.");
+						break;
+					}
+				}
+				// add final page contents
+				tempList.Add(workingPageText);
+				maxPages = tempList.Count - 1;
+				pages = tempList;
+
+				// if you're on the active page, or the console is hidden, update as you're viewing it
+				if (currentPage == 1 || !instance.IsVisible)
+				{
+					ShowPage(1);
+				}
+
 			}
+		}
+
+		private static void ShowPage(int pageNumber)
+		{
+			currentPage = pageNumber;
+			commandOutput.text = pages[pageNumber];
+			pageText.text = $"{currentPage}/{maxPages}";
+			instance.StartCoroutine(ScrollMenuToBottom());
 		}
 
 		// Creates a static GameObject and adds self to it as a component
@@ -115,12 +164,31 @@ namespace ModCore
 			commandListBG = menuObj.transform.Find("DebugMenu/CommandInput/CommandHelper").gameObject;
 			commandListBGRect = commandListBG.GetComponent<RectTransform>();
 			commandList = menuObj.transform.Find("DebugMenu/CommandInput/CommandHelper/Commands").GetComponent<Text>();
+			pageText = menuObj.transform.Find("DebugMenu/PageButtons/Pages/PageText").GetComponent<Text>();
+			lastPageButton = menuObj.transform.Find("DebugMenu/PageButtons/Back Button").GetComponent<Button>();
+			nextPageButton = menuObj.transform.Find("DebugMenu/PageButtons/Forward Button").GetComponent<Button>();
 			closeButton = menuObj.transform.Find("DebugMenu/CloseButton").GetComponent<Button>();
 			animator = menuObj.transform.GetChild(0).GetComponent<Animator>();
 			scrollbar = menuObj.transform.Find("DebugMenu/HistoryBG/Scroll View/Scrollbar Vertical").GetComponent<Scrollbar>();
 
 			// Add listeners
 			closeButton.onClick.AddListener(() => { ToggleMenuVisibility(); });
+			lastPageButton.onClick.AddListener(() =>
+			{
+				int targetPage = currentPage - 1;
+                Debug.Log($"target: {targetPage}, current: {currentPage}, max: {maxPages}");
+                if (targetPage <= 0) targetPage = maxPages;
+                Debug.Log($"target: {targetPage}, current: {currentPage}, max: {maxPages}");
+                ShowPage(targetPage);
+			});
+			nextPageButton.onClick.AddListener(() =>
+			{
+				int targetPage = currentPage + 1;
+                Debug.Log($"target: {targetPage}, current: {currentPage}, max: {maxPages}");
+                if (targetPage > maxPages) targetPage = 1;
+                Debug.Log($"target: {targetPage}, current: {currentPage}, max: {maxPages}");
+                ShowPage(targetPage);
+			});
 			commandInput.onEndEdit.AddListener(ParseInput);
 			commandInput.onValueChanged.AddListener(SuggestCommand);
 
@@ -132,6 +200,9 @@ namespace ModCore
 
 			// Make DebugMenu persistent
 			DontDestroyOnLoad(menuObj);
+
+			// create pages
+			pages = new();
 		}
 
 		private void Update()
@@ -271,7 +342,9 @@ namespace ModCore
 			{
 				commands = new()
 				{
-					new("help", HelpCommand)
+					new("help", HelpCommand),
+					new("clear", ClearCommand),
+					new("lorum", LorumCommand)
 				};
 			}
 
@@ -297,6 +370,30 @@ namespace ModCore
 					output += command.Name + "\n";
 
 				LogToConsole(output);
+			}
+
+			private void ClearCommand(string[] args)
+			{
+				pages = new();
+				LogToConsole("Console cleared.");
+			}
+
+			private void LorumCommand(string[] args)
+			{
+				if (args.Length > 0)
+				{
+					int iterations = 0;
+					if (int.TryParse(args[0], out iterations))
+					{
+						for (int i = 0; i < iterations; i++)
+						{
+							// Mjau
+							LogToConsole("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.");
+							Debug.Log("Console characters:" + commandOutput.text.Length);
+						}
+					}
+				}
+				else LogToConsole("USAGE:\nlorum <iterations>\nLogs lorum ipsum the specified number of times to the console for testing.", TextColor.Error);
 			}
 
 			public class CommandInfo

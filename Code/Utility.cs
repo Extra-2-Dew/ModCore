@@ -49,6 +49,7 @@ namespace ModCore
 		/// <returns>The formatted string with the color tag added</returns>
 		public static string ColorText(string text, string color)
 		{
+			if (color == "#000000") return text;
 			return $"<color={color}>{text}</color>";
 		}
 
@@ -153,6 +154,11 @@ namespace ModCore
 			return null;
 		}
 
+		/// <summary>
+		/// Reads an image file and converts it to a texture in memory
+		/// </summary>
+		/// <param name="path">Full path to the image file</param>
+		/// <returns></returns>
 		public static Texture2D GetTextureFromFile(string path)
 		{
             try

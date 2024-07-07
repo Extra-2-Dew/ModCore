@@ -155,34 +155,32 @@ namespace ModCore
 		}
 
 		/// <summary>
-		/// Reads an image file and converts it to a texture in memory
+		/// Creates a new Texture2D with the image found at the given path
 		/// </summary>
-		/// <param name="path">Full path to the image file</param>
-		/// <returns></returns>
+		/// <param name="path">The relative path to the image (starting from mod directory)</param>
+		/// <returns>The created Texture2D, or null if image was not found</returns>
 		public static Texture2D GetTextureFromFile(string path)
 		{
-            try
-            {
-                byte[] data = null;
-                if (File.Exists(path))
-                {
-                    data = File.ReadAllBytes(path);
-                }
-                else
-                {
-                    Plugin.Log.LogError($"Unable to find the texture requested at {path}.");
-                    return null;
-                }
-                Texture2D tex = new(512, 512, TextureFormat.RGBA32, false);
-                tex.LoadImage(data);
+			try
+			{
+				string fullPath = BepInEx.Utility.CombinePaths(Paths.PluginPath, path);
+				byte[] data = File.Exists(fullPath) ? File.ReadAllBytes(fullPath) : null;
 
-                return tex;
-            }
-            catch (Exception e)
-            {
-                Plugin.Log.LogError("Unable to load provided texture: " + e.Message);
-                return null;
-            }
-        }
+				if (data == null)
+				{
+					Plugin.Log.LogError($"Error in GetTextureFromFile(): No file was found at path '{fullPath}'");
+					return null;
+				}
+
+				Texture2D texture = new(512, 512, TextureFormat.RGBA32, false);
+				texture.LoadImage(data);
+				return texture;
+			}
+			catch (Exception ex)
+			{
+				Plugin.Log.LogError("Error in GetTextureFromFile(): " + ex.Message);
+				return null;
+			}
+		}
 	}
 }

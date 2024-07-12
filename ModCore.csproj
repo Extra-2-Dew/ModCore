@@ -26,7 +26,7 @@
 		</Reference>
 
 		<Reference Include="Newtonsoft.Json">
-		  <HintPath>C:\Users\Awesome\AppData\LocalLow\Ludosity\Ittle Dew 2\BepInEx\plugins\ArchipelagoRandomizer\Newtonsoft.Json.dll</HintPath>
+		  <HintPath>Newtonsoft.Json.dll</HintPath>
 		</Reference>
 		<Reference Include="UnityEngine.UI">
 			<HintPath>$(GameInstallPath)\ID2_Data\\Managed\UnityEngine.UI.dll</HintPath>

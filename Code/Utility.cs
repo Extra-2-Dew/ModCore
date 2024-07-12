@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using Newtonsoft.Json;
 using SmallJson;
 using System;
 using System.IO;
@@ -75,6 +76,42 @@ namespace ModCore
 			}
 
 			return false;
+		}
+
+		/// <summary>
+		/// Tries to parse JSON into the given type
+		/// </summary>
+		/// <typeparam name="T">The type to parse the data into</typeparam>
+		/// <param name="localPath">The local path (starting at Plugins folder) to the JSON file</param>
+		/// <param name="deserializedObj">The parsed object</param>
+		/// <returns>True if parse was successful, false otherwise</returns>
+		public static bool TryParseJson<T>(string localPath, out Nullable<T> deserializedObj) where T : struct
+		{
+			string jsonPath = BepInEx.Utility.CombinePaths(BepInEx.Paths.PluginPath, localPath);
+			deserializedObj = null;
+
+			try
+			{
+				if (!File.Exists(jsonPath))
+				{
+					Plugin.Log.LogWarning($"JSON file at path '{jsonPath}' was not found!");
+					return false;
+				}
+
+				string json = File.ReadAllText(jsonPath);
+				deserializedObj = JsonConvert.DeserializeObject<T>(json);
+				return true;
+			}
+			catch (JsonException ex)
+			{
+				Plugin.Log.LogError($"JSON deserialization error: {ex.Message}");
+				return false;
+			}
+			catch (Exception ex)
+			{
+				Plugin.Log.LogError($"An error occurred: {ex.Message}");
+				return false;
+			}
 		}
 
 		/// <summary>

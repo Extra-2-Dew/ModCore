@@ -11,6 +11,8 @@ namespace ModCore
 {
 	public static class Utility
 	{
+		private static Entity player;
+
 		/// <summary>
 		/// Loads the scene by build index
 		/// </summary>
@@ -189,6 +191,19 @@ namespace ModCore
 			}
 
 			return null;
+		}
+
+		/// <summary>
+		/// Gets the reference to the player's Entity component.
+		/// </summary>
+		/// <returns>The player's Entity component, or null if the player does not exist.</returns>
+		public static Entity GetPlayer()
+		{
+			if (player == null)
+			{
+				player = EntityTag.GetEntityByName("PlayerEnt");
+			}
+			return player;
 		}
 
 		/// <summary>

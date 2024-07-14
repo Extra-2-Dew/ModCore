@@ -25,7 +25,7 @@ namespace ModCore
 		// Prevents pause warps from sending death event for player
 		public static void Killable_ForceDeath(Killable.DeathData deathData)
 		{
-			if (string.IsNullOrEmpty(deathData.deathTag))
+			if (deathData.silentDeath)
 				deathData.deathTag = "warp";
 		}
 

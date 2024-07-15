@@ -7,7 +7,7 @@ An essential dependency for many mods for Ittle Dew 2. Has an event API and some
 ModCore and all mods that depend on it are **incompatible with Extra 2 Dew**. If you have Extra 2 Dew installed, you'll need to uninstall it by validating your files with Steam.
 
 1. Install the latest release of [Bepinex](https://github.com/BepInEx/BepInEx/releases) via the [installation instructions](https://docs.bepinex.dev/articles/user_guide/installation/index.html). Ittle Dew 2 is a 64 bit game.
-2. Download the latest of ModCore from the [releases page](https://github.com/Extra-2-Dew/ModCore/releases).
+2. Download the latest release of ModCore from the [releases page](https://github.com/Extra-2-Dew/ModCore/releases).
 3. Unzip the release and drop it in your plugins folder.
 4. If installed correctly, the Bepinex console should open when you launch Ittle Dew 2, and pressing ` while in-game should open the E2D2 console.
 
@@ -25,9 +25,9 @@ Each page of the console can contain up to 16K characters. If the console histor
 
 The following commands are included with ModCore:
 
-* help: Lists all currently registered commands
-* clear: Completely clears the console history
-* lorum [quantity]: logs Lorum Ipsum to the console the specified number of times and states the console length in the Bepinex console.
+* `help`: Lists all currently registered commands
+* `clear`: Completely clears the console history
+* `lorum [quantity]`: logs Lorum Ipsum to the console the specified number of times and states the console length in the Bepinex console.
 
 ## API
 

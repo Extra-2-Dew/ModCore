@@ -280,6 +280,8 @@ namespace ModCore
 				command.Callback.Invoke(args);
 				Plugin.Log.LogInfo($"Ran command {commandName} with {args.Length} args!");
 			}
+			else LogToConsole($"Command \"{commandName}\" not recognized.\nUse \"help\" for a list of valid commands.", TextColor.Error);
+
 
 			commandInput.ActivateInputField();
 		}

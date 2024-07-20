@@ -24,7 +24,7 @@ namespace ModCore
 		public Action OnDebugMenuInitialized;
 		public bool IsVisible { get; private set; }
 
-		
+
 		private static DebugMenuManager instance;
 		private static Dictionary<TextColor, string> textColors = new()
 		{
@@ -157,6 +157,8 @@ namespace ModCore
 
 			// Instantiate DebugMenu object
 			GameObject menuObj = Instantiate(bundle.LoadAsset<GameObject>("DebugScreen"));
+			GameObject eventSystem = Instantiate(bundle.LoadAsset<GameObject>("EventSystem"));
+			DontDestroyOnLoad(eventSystem);
 
 			// Get references
 			commandInput = menuObj.GetComponentInChildren<InputField>();
@@ -176,18 +178,18 @@ namespace ModCore
 			lastPageButton.onClick.AddListener(() =>
 			{
 				int targetPage = currentPage - 1;
-                Debug.Log($"target: {targetPage}, current: {currentPage}, max: {maxPages}");
-                if (targetPage <= 0) targetPage = maxPages;
-                Debug.Log($"target: {targetPage}, current: {currentPage}, max: {maxPages}");
-                ShowPage(targetPage);
+				Debug.Log($"target: {targetPage}, current: {currentPage}, max: {maxPages}");
+				if (targetPage <= 0) targetPage = maxPages;
+				Debug.Log($"target: {targetPage}, current: {currentPage}, max: {maxPages}");
+				ShowPage(targetPage);
 			});
 			nextPageButton.onClick.AddListener(() =>
 			{
 				int targetPage = currentPage + 1;
-                Debug.Log($"target: {targetPage}, current: {currentPage}, max: {maxPages}");
-                if (targetPage > maxPages) targetPage = 1;
-                Debug.Log($"target: {targetPage}, current: {currentPage}, max: {maxPages}");
-                ShowPage(targetPage);
+				Debug.Log($"target: {targetPage}, current: {currentPage}, max: {maxPages}");
+				if (targetPage > maxPages) targetPage = 1;
+				Debug.Log($"target: {targetPage}, current: {currentPage}, max: {maxPages}");
+				ShowPage(targetPage);
 			});
 			commandInput.onEndEdit.AddListener(ParseInput);
 			commandInput.onValueChanged.AddListener(SuggestCommand);
@@ -384,8 +386,7 @@ namespace ModCore
 			{
 				if (args.Length > 0)
 				{
-					int iterations = 0;
-					if (int.TryParse(args[0], out iterations))
+					if (int.TryParse(args[0], out int iterations))
 					{
 						for (int i = 0; i < iterations; i++)
 						{

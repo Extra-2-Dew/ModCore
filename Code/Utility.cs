@@ -84,13 +84,12 @@ namespace ModCore
 		/// Tries to parse JSON into the given type
 		/// </summary>
 		/// <typeparam name="T">The type to parse the data into</typeparam>
-		/// <param name="localPath">The local path (starting at Plugins folder) to the JSON file</param>
+		/// <param name="jsonPath">The path to the JSON file</param>
 		/// <param name="deserializedObj">The parsed object</param>
 		/// <returns>True if parse was successful, false otherwise</returns>
-		public static bool TryParseJson<T>(string localPath, out Nullable<T> deserializedObj) where T : struct
+		public static bool TryParseJson<T>(string jsonPath, out T deserializedObj)
 		{
-			string jsonPath = BepInEx.Utility.CombinePaths(BepInEx.Paths.PluginPath, localPath);
-			deserializedObj = null;
+			deserializedObj = default(T);
 
 			try
 			{
@@ -114,6 +113,17 @@ namespace ModCore
 				Plugin.Log.LogError($"An error occurred: {ex.Message}");
 				return false;
 			}
+		}
+
+		/// <summary>
+		/// Serializes the given object into JSON and writes that to a file
+		/// </summary>
+		/// <param name="objToSerialize">The object to serialize</param>
+		/// <param name="saveToPath">The path for the file</param>
+		public static void WriteJsonToFile(object objToSerialize, string saveToPath)
+		{
+			string json = JsonConvert.SerializeObject(objToSerialize, Formatting.Indented);
+			File.WriteAllText(saveToPath, json);
 		}
 
 		/// <summary>

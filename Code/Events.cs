@@ -47,6 +47,9 @@ public static class Events
 
 	public static void RoomChange(Entity entity, LevelRoom toRoom, LevelRoom fromRoom, EntityEventsOwner.RoomEventData data)
 	{
+		if (toRoom == null)
+			toRoom = LevelRoom.GetRoomForPosition(ModCore.Utility.GetPlayer().transform.position);
+
 		OnRoomChanged?.Invoke(entity, toRoom, fromRoom, data);
 	}
 

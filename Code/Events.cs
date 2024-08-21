@@ -17,8 +17,9 @@ public static class Events
 	public static event SceneFunc OnSceneLoaded;
 	public static event Func OnGameQuit;
 	public static event FileFunc OnFileStart;
+	public static event ChangeScreenFunc OnChangeScreen;
 
-	// Player
+	// Delegates
 	public delegate void Func();
 	public delegate void PlayerSpawnFunc(Entity player, GameObject camera, PlayerController controller);
 	public delegate void FileFunc(bool newFile);
@@ -28,6 +29,7 @@ public static class Events
 	public delegate void RoomChangeFunc(Entity entity, LevelRoom toRoom, LevelRoom fromRoom, EntityEventsOwner.RoomEventData data);
 	public delegate void ItemGetFunc(Entity entity, Item item);
 	public delegate void SceneFunc(Scene scene, LoadSceneMode mode);
+	public delegate void ChangeScreenFunc(string toScreen, object args = null);
 
 	public static void PlayerSpawn(Entity player, GameObject camera, PlayerController controller)
 	{
@@ -72,6 +74,11 @@ public static class Events
 	public static void GameQuit()
 	{
 		OnGameQuit?.Invoke();
+	}
+
+	public static void ChangeScreen(string toScreen, object args = null)
+	{
+		OnChangeScreen?.Invoke(toScreen, args);
 	}
 
 	internal static void FileStart(bool newFile)

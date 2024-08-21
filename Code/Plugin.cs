@@ -21,6 +21,7 @@ namespace ModCore
 
 			// Applies all patches
 			Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+			Patches.MenuImplPatches(new("MenuImplPatcher"));
 
 			// Adds event listeners
 			AddEventListeners();

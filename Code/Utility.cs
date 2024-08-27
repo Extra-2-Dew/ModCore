@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using SmallJson;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -214,6 +215,18 @@ namespace ModCore
 				player = EntityTag.GetEntityByName("PlayerEnt");
 			}
 			return player;
+		}
+
+		/// <summary>
+		/// Loads an asset from the requested bundle. Automatically caches the loaded GameObject, and
+		/// if the MeshRenderers use materials with Dummy shaders, replaces them with vanilla Custom shaders.
+		/// </summary>
+		/// <param name="bundlePath">The path to the asset bundle on disk</param>
+		/// <param name="assetPath">The path within the asset bundle to your asset. Don't forget the .prefab</param>
+		/// <returns></returns>
+		public static GameObject LoadAssetFromBundle(string bundlePath, string assetPath)
+		{
+			return AssetBundleData.GetObjectFromBundle(bundlePath, assetPath);
 		}
 
 		/// <summary>

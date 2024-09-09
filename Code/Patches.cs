@@ -1,13 +1,17 @@
-﻿using System;
-using System.Reflection;
-using HarmonyLib;
-using UnityEngine;
+﻿using HarmonyLib;
+using System;
 
 namespace ModCore
 {
 	[HarmonyPatch]
 	public class Patches
 	{
+		[HarmonyPostfix, HarmonyPatch(typeof(PlayerRespawner), nameof(PlayerRespawner.DoRespawn))]
+		public static void PlayerRespawner_DoRespawn_Patch()
+		{
+			Events.PlayerRespawn();
+		}
+
 		[HarmonyPostfix]
 		[HarmonyPatch(typeof(ObjectUpdater.UpdateLayer), nameof(ObjectUpdater.UpdateLayer.SetPause))]
 		public static void ObjectUpdaterUpdateLayer_SetPause_Patch(bool pause)
@@ -85,15 +89,15 @@ namespace ModCore
 			var targetMainMenuMethod = AccessTools.Method(typeof(MenuImpl<MainMenu>), nameof(MenuImpl<MainMenu>.SwitchToScreen), new Type[] { typeof(MenuScreen<MainMenu>), typeof(object) });
 			var switchScreenPrefix = new HarmonyMethod(typeof(Patches).GetMethod(nameof(Patches.SendChangeScreenEvent)));
 			harmonyInstance.Patch(targetMainMenuMethod, prefix: switchScreenPrefix);
-        }
+		}
 
 		public static void SendChangeScreenEvent(MenuScreen<MainMenu> screen, object args)
 		{
-            Plugin.Log.LogInfo($"Switching to screen {screen.Name}");
-            Events.ChangeScreen(screen.Name, args);
+			Plugin.Log.LogInfo($"Switching to screen {screen.Name}");
+			Events.ChangeScreen(screen.Name, args);
 			// For some reason I don't need to patch the other Menu types, this works for all of them
 			// However, I can't actually get the type used in the generic, so all I can do is return the name of the screen
-        }
-        #endregion
-    }
+		}
+		#endregion
+	}
 }

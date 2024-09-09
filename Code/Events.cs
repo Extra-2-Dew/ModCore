@@ -5,6 +5,7 @@ public static class Events
 {
 	// Player
 	public static event PlayerSpawnFunc OnPlayerSpawn;
+	public static event Func OnPlayerRespawn;
 
 	// Entity
 	public static event EntityFunc OnEntitySpawn;
@@ -34,6 +35,11 @@ public static class Events
 	public static void PlayerSpawn(Entity player, GameObject camera, PlayerController controller)
 	{
 		OnPlayerSpawn?.Invoke(player, camera, controller);
+	}
+
+	public static void PlayerRespawn()
+	{
+		OnPlayerRespawn?.Invoke();
 	}
 
 	public static void EntitySpawn(Entity entity)

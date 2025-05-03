@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using SmallJson;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -13,6 +12,23 @@ namespace ModCore
 	public static class Utility
 	{
 		private static Entity player;
+		private static SaverOwner mainSaver;
+
+		/// <summary>
+		/// The main save data for the current file
+		/// </summary>
+		public static SaverOwner MainSaver
+		{
+			get
+			{
+				if (mainSaver == null)
+				{
+					mainSaver = Resources.Load<GameStatData>("gamestats/Data").Saver;
+				}
+
+				return mainSaver;
+			}
+		}
 
 		/// <summary>
 		/// Loads the scene by build index

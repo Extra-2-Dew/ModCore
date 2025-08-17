@@ -9,6 +9,14 @@ using UnityEngine.SceneManagement;
 
 namespace ModCore
 {
+	public enum FadeType
+	{
+		AdditiveFade,
+		ScreenFade,
+		ScreenCircleWipe,
+		ScreenInvCircleWipe,
+	}
+
 	public static class Utility
 	{
 		private static Entity player;
@@ -272,6 +280,25 @@ namespace ModCore
 				Plugin.Log.LogError("Error in GetTextureFromFile(): " + ex.Message);
 				return null;
 			}
+		}
+
+		/// <summary>
+		/// Creates and returns a new FadeEffectData with the given parameters
+		/// </summary>
+		/// <param name="targetColor">The color the fade should use</param>
+		/// <param name="fadeOutTime">The time in seconds for the fade out</param>
+		/// <param name="fadeInTime">The time in seconds for the fade in</param>
+		/// <param name="fadeType">The type of fade animation</param>
+		/// <param name="useScreenPos">Start at center of screen</param>
+		public static FadeEffectData MakeFadeData(Color targetColor, float fadeOutTime = 0.5f, float fadeInTime = 1.25f, FadeType fadeType = FadeType.ScreenCircleWipe, bool useScreenPos = true)
+		{
+			FadeEffectData fadeData = ScriptableObject.CreateInstance<FadeEffectData>();
+			fadeData._targetColor = targetColor;
+			fadeData._fadeOutTime = fadeOutTime;
+			fadeData._fadeInTime = fadeInTime;
+			fadeData._faderName = fadeType.ToString();
+			fadeData._useScreenPos = useScreenPos;
+			return fadeData;
 		}
 	}
 }
